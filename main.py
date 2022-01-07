@@ -89,7 +89,7 @@ def main():
     print("get_list：", securities_report_doc_list)
     #データを取得する
     get_df = download_xbrl_in_zip(securities_report_doc_list, number_of_lists,df2,df3,df4)
-    # tweet(api,get_df)
+    tweet(api,get_df)
     save_df = pd.concat([df5,get_df],join='inner',axis=0,sort=False,ignore_index=True)
 
     # 列名とデータを連結して書き込み
