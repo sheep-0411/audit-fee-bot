@@ -11,10 +11,10 @@ def tweet(api,company_info_list):
             i = 1
             for kam in [row['KAM1'],row['KAM2'],row['KAM3'],row['KAM4'],row['KAM5']]:
                 if kam != ' ':
-                    kam_message = kam_message + 'KAM' + str(i) + ':' + kam + '\n'
+                    kam_message = kam_message + 'KAM' + str(i) + ' ' + kam + '\n'
                     i = i + 1
 
-            message = row['会社名'] + '\n' + '期末日 ' + row['期末日'] + '\n' + '提出日 ' + str(row['提出日']) + '\n' + '監査報酬 ' + str('{:,}'.format(audit_fee)) + '百万円' + '(前期' + str('{:,}'.format(audit_fee_prior)) + '百万円)' + '\n' + row['監査法人']
+            message = row['会社名'] + '\n' + row['所在地'] + '\n' + row['提出者業種'] + '\n' + '期末日 ' + row['期末日'] + '\n' + '提出日 ' + str(row['提出日']) + '\n' + '監査報酬 ' + str('{:,}'.format(audit_fee)) + '百万円' + '(前期' + str('{:,}'.format(audit_fee_prior)) + '百万円)' + '\n' + row['監査法人']
 
             api.update_status(status=message[:139])
             print(message)

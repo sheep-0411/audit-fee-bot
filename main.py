@@ -1,4 +1,5 @@
 from numpy import int64
+from requests.api import get
 import tweepy
 from dotenv import find_dotenv, load_dotenv
 import os
@@ -60,6 +61,7 @@ wks4 = sh.worksheet('(Tag_auditreport)GetItemList')
 
 wks5 = sh.worksheet('save_data')
 wks6 = sh.worksheet('date')
+wks7 = sh.worksheet('public_company_list')
 
 # シートから全部から読み込み
 def get_records(wks):
@@ -72,6 +74,7 @@ df3 = get_records(wks3)
 df4 = get_records(wks4)
 df5 = get_records(wks5)
 df6 = get_records(wks6)
+df7 = get_records(wks7)
 
 def main():
     #取得したい期間を設定する
@@ -89,7 +92,11 @@ def main():
     print("get_list：", securities_report_doc_list)
     #データを取得する
     get_df = download_xbrl_in_zip(securities_report_doc_list, number_of_lists,df2,df3,df4)
-    tweet(api,get_df)
+    mearge_date = pd.merge(get_df , df7[['EDINET_code','提出者業種','証券コード','所在地']],left_on='EDINETコード', right_on='EDINET_code').drop(columns='EDINET_code')
+    
+    print(mearge_date)
+    
+    tweet(api,mearge_date)
     save_df = pd.concat([df5,get_df],join='inner',axis=0,sort=False,ignore_index=True)
 
     # 列名とデータを連結して書き込み
