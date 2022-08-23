@@ -12,6 +12,7 @@ import pandas as pd
 # Googleスプレッドシートとの連携に必要なライブラリ
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+from gspread_dataframe import set_with_dataframe
 
 from tweet import tweet
 
@@ -63,6 +64,8 @@ wks5 = sh.worksheet('save_data')
 wks6 = sh.worksheet('date')
 wks7 = sh.worksheet('public_company_list')
 
+wks15 = sh.worksheet('シート15')
+
 # シートから全部から読み込み
 def get_records(wks):
     record = pd.DataFrame(wks.get_all_records())
@@ -94,13 +97,14 @@ def main():
     get_df = download_xbrl_in_zip(securities_report_doc_list, number_of_lists,df2,df3,df4)
     mearge_date = pd.merge(get_df , df7[['EDINET_code','提出者業種','証券コード','所在地']],left_on='EDINETコード', right_on='EDINET_code').drop(columns='EDINET_code')
     
-    print(mearge_date)
+    # print(mearge_date)
     
     tweet(api,mearge_date)
-    save_df = pd.concat([df5,get_df],join='inner',axis=0,sort=False,ignore_index=True)
-
+    save_df = pd.concat([df5,get_df],join='inner',axis=0,sort=False,ignore_index=True).drop_duplicates(subset=['期末日','会社名'])
+    print(save_df)
     # 列名とデータを連結して書き込み
     # ,value_input_option='USER_ENTERED'を加えることで数値型の入力が可能
-    wks5.update([save_df.columns.values.tolist()] + save_df.values.tolist(),value_input_option='USER_ENTERED')
+    #wks5.update([save_df.columns.values.tolist()] + save_df.values.tolist(),value_input_option='USER_ENTERED')
+    set_with_dataframe(wks5, save_df)
 if __name__ == "__main__":
     main()
